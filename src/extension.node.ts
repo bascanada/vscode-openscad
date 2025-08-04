@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import { Cheatsheet } from 'src/cheatsheet/cheatsheet-panel';
 import { PreviewManager } from 'src/preview/preview-manager';
 import { LoggingService } from './logging-service';
+import { previewPanelCommand } from './preview/openscad-panel';
 
 const extensionName = process.env.EXTENSION_NAME || 'antyos.openscad';
 const extensionVersion = process.env.EXTENSION_VERSION || '0.0.0';
@@ -31,6 +32,7 @@ export function activate(context: vscode.ExtensionContext): void {
             'openscad.preview',
             (mainUri, allUris) => previewManager.openFile(mainUri, allUris)
         ),
+        vscode.commands.registerCommand('openscad.previewPanel', previewPanelCommand('native', context)),
         vscode.commands.registerCommand(
             'openscad.exportByType',
             (mainUri, allUris) => previewManager.exportFile(mainUri, allUris)
@@ -57,6 +59,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('openscad.showOutput', () => {
             loggingService.show();
         }),
+
     ];
 
     // Register commands, event listeners, and status bar item

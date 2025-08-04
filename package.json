@@ -48,6 +48,15 @@
                 }
             },
             {
+                "command": "openscad.previewPanel",
+                "title": "Preview inside vscode panel",
+                "category": "OpenSCAD",
+                "icon": {
+                    "light": "./media/icons/preview-light.svg",
+                    "dark": "./media/icons/preview-dark.svg"
+                }
+            },
+            {
                 "command": "openscad.kill",
                 "title": "Kill OpenSCAD Previews",
                 "category": "OpenSCAD",
@@ -111,6 +120,11 @@
                     "group": "navigation@-1.2"
                 },
                 {
+                    "command": "openscad.previewPanel",
+                    "when": "editorLangId == scad && config.openscad.interface.showPreviewIconInEditorTitleMenu && !virtualWorkspace",
+                    "group": "navigation@-1.2"
+                },
+                {
                     "command": "openscad.autoKill",
                     "alt": "openscad.kill",
                     "when": "editorLangId == scad && config.openscad.interface.showKillIconInEditorTitleMenu && !virtualWorkspace",
@@ -128,6 +142,11 @@
                     "command": "openscad.preview",
                     "when": "resourceLangId == scad && config.openscad.interface.showPreviewInContextMenus && config.openscad.interface.showCommandsInEditorTitleContextMenu",
                     "group": "navigation@0"
+                },
+                {
+                    "command": "openscad.previewPanel",
+                    "when": "editorLangId == scad && config.openscad.interface.showPreviewIconInEditorTitleMenu && !virtualWorkspace",
+                    "group": "navigation@-1.2"
                 },
                 {
                     "command": "openscad.exportByConfig",
@@ -153,6 +172,10 @@
                 {
                     "command": "openscad.preview",
                     "when": "editorLangId == scad || resourceLangId == scad"
+                },
+                {
+                    "command": "openscad.previewPanel",
+                    "when": "areOpenScadPreviews"
                 },
                 {
                     "command": "openscad.kill",
@@ -414,6 +437,7 @@
         "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
     },
     "devDependencies": {
+        "@bascanada/openscad-compiler": "0.0.2",
         "@types/command-exists": "^1.2.0",
         "@types/glob": "^7.2.0",
         "@types/jsdom": "^16.2.15",
@@ -448,6 +472,7 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
+        "@bascanada/cad-viewer": "0.0.1",
         "command-exists": "^1.2.9",
         "escape-string-regexp": "^4.0.0",
         "luxon": "^3.4.4",
