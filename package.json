@@ -437,7 +437,6 @@
         "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
     },
     "devDependencies": {
-        "@bascanada/openscad-compiler": "0.0.2",
         "@types/command-exists": "^1.2.0",
         "@types/glob": "^7.2.0",
         "@types/jsdom": "^16.2.15",
@@ -472,10 +471,12 @@
         "webpack-cli": "^5.1.4"
     },
     "dependencies": {
-        "@bascanada/cad-viewer": "0.0.1",
+        "@bascanada/openscad-compiler": "0.0.5",
+        "@bascanada/cad-viewer": "0.0.4",
         "command-exists": "^1.2.9",
         "escape-string-regexp": "^4.0.0",
         "luxon": "^3.4.4",
         "node-html-parser": "^6.1.5"
-    }
+    },
+    "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
 }

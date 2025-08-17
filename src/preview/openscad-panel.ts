@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 
 
 import * as openscad from '@bascanada/openscad-compiler';
+import { once } from 'events';
 
 export function previewPanelCommand(mode: openscad.EngineType, context: vscode.ExtensionContext,) {
     return (uri: vscode.Uri) => {
@@ -29,10 +30,16 @@ export function previewPanelCommand(mode: openscad.EngineType, context: vscode.E
         const compiler = new openscad.Compiler({ engine: mode, nativePath: executablePath });
 
         const compileAndPost = (text: string) => {
-            compiler.compile(text).then((stlData: string) => {
-                currentStlPayload = stlData;
+            const emitter = compiler.compile(text);
+
+            emitter.on('stderr', console.log);
+            emitter.on('stdout', console.log);
+
+            once(emitter, 'done').then((data: Buffer[]) => {
+                const payload = data[0];
+                currentStlPayload = payload.toString();
                 panel.webview.postMessage({
-                    stlData
+                    stlData: currentStlPayload
                 });
             }).catch((error: Error) => {
                 console.log(error);

@@ -21,8 +21,9 @@ export function getWebviewContent(webview: Webview, extensionUri: Uri): string {
       <title>SLT Viewer</title>
     </head>
     <body style="height: 100%; width: 100%; margin: 0;">
-        <stl-viewer 
-            id="stl-viewer"
+        <cad-viewer 
+            id="cad-viewer"
+            gizmoScale="0.7"
             viewerBackgroundColor="var(--vscode-editor-background)"
             toolbarBackgroundColor="var(--vscode-editorWidget-background, rgba(42, 42, 42, 0.8))"
             toolbarButtonBackgroundColor="var(--vscode-button-background)"
@@ -32,18 +33,18 @@ export function getWebviewContent(webview: Webview, extensionUri: Uri): string {
             infoPanelBackgroundColor="var(--vscode-editorWidget-background, rgba(42, 42, 42, 0.8))"
             infoPanelForegroundColor="var(--vscode-editorWidget-foreground, #eee)"
             infoPanelSpanBackgroundColor="var(--vscode-input-background, #444)"
-        ></stl-viewer>
+        ></cad-viewer>
 
         <script nonce="${nonce}" src="${componentScriptUri}"></script>
         <script nonce="${nonce}">
-            const stlViewer = document.getElementById('stl-viewer');
+            const cadViewer = document.getElementById('cad-viewer');
             window.addEventListener('message', event => {
                 const message = event.data; // The JSON data our extension sent
                 if (message.stlData) {
                     if (typeof message.stlData === 'string') {
-                        stlViewer.stlPayload = message.stlData;
+                        cadViewer.payload = message.stlData;
                     } else if (message.stlData.buffer instanceof ArrayBuffer) {
-                        stlViewer.stlPayload = message.stlData.buffer;
+                        cadViewer.payload = message.stlData.buffer;
                     }
                 }
             });
