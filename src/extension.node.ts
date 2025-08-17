@@ -11,11 +11,43 @@ import { PreviewManager } from 'src/preview/preview-manager';
 import { LoggingService } from './logging-service';
 import { previewPanelCommand } from './preview/openscad-panel';
 
+import { OpenScadDataManager } from './vfs/data-manager';
+import { OpenScadVFSProvider } from './vfs/vfs-provider';
+import { vfsFilePreview } from './preview/vfs-file-preview';
+
 const extensionName = process.env.EXTENSION_NAME || 'antyos.openscad';
 const extensionVersion = process.env.EXTENSION_VERSION || '0.0.0';
 
 /** Called when extension is activated */
 export function activate(context: vscode.ExtensionContext): void {
+    // Event emitter to notify panels to refresh STL after compilation
+    const stlRefreshEmitter = new vscode.EventEmitter<vscode.Uri>();
+    const onStlRefresh = stlRefreshEmitter.event;
+    // Track which URIs have an open preview panel
+    const openPreviewUris = new Set<string>();
+    // --- VFS Initialization ---
+    const dataManager = new OpenScadDataManager();
+    const vfsProvider = new OpenScadVFSProvider(dataManager);
+    context.subscriptions.push(
+        vscode.workspace.registerFileSystemProvider('openscad-debug', vfsProvider, { isCaseSensitive: true })
+    );
+
+    // --- Trigger Eager Compilation on Save ---
+    context.subscriptions.push(
+        vscode.workspace.onDidSaveTextDocument(async (document) => {
+            // Only trigger compilation if this file has an open preview panel
+            if ((document.languageId === 'scad' || document.fileName.endsWith('.scad')) && openPreviewUris.has(document.uri.toString())) {
+                vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Window,
+                    title: 'Compiling OpenSCAD STL...'
+                }, async () => {
+                    await dataManager.triggerCompilation(document.uri);
+                    stlRefreshEmitter.fire(document.uri);
+                });
+            }
+        })
+    );
+
     const loggingService = new LoggingService();
 
     loggingService.logInfo(`Activating ${extensionName} v${extensionVersion}`);
@@ -32,7 +64,9 @@ export function activate(context: vscode.ExtensionContext): void {
             'openscad.preview',
             (mainUri, allUris) => previewManager.openFile(mainUri, allUris)
         ),
-        vscode.commands.registerCommand('openscad.previewPanel', previewPanelCommand('native', context)),
+        vscode.commands.registerCommand('openscad.previewPanel', previewPanelCommand('native', context, openPreviewUris, dataManager, onStlRefresh)),
+        vscode.commands.registerCommand('openscad.showErrorLog', vfsFilePreview('/error.log')),
+        vscode.commands.registerCommand('openscad.showRenderLog', vfsFilePreview('/render.log')),
         vscode.commands.registerCommand(
             'openscad.exportByType',
             (mainUri, allUris) => previewManager.exportFile(mainUri, allUris)

@@ -2,18 +2,23 @@ import { getWebviewContent } from 'src/preview/web-view';
 import * as vscode from 'vscode';
 
 
-import * as openscad from '@bascanada/openscad-compiler';
-import { once } from 'events';
 
-export function previewPanelCommand(mode: openscad.EngineType, context: vscode.ExtensionContext,) {
+import { OpenScadDataManager } from '../vfs/data-manager';
+export function previewPanelCommand(
+    mode: string, // not used anymore, but kept for signature compatibility
+    context: vscode.ExtensionContext,
+    openPreviewUris: Set<string>,
+    dataManager: OpenScadDataManager,
+    onStlRefresh: (listener: (uri: vscode.Uri) => any) => vscode.Disposable
+): (uri: vscode.Uri) => void {
     return (uri: vscode.Uri) => {
+        openPreviewUris.add(uri.toString());
         const panel = vscode.window.createWebviewPanel(
             'myWebApp',
             'My Web App',
             vscode.ViewColumn.Two,
             {
                 enableScripts: true,
-                // Restrict the webview to only loading files from the dist folder
                 localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'node_modules', '@bascanada', 'cad-viewer', 'dist')],
             }
         );
@@ -21,62 +26,48 @@ export function previewPanelCommand(mode: openscad.EngineType, context: vscode.E
         let currentStlPayload = '';
         let wasPanelVisible = panel.visible;
 
-        // Set the webview's HTML content
         panel.webview.html = getWebviewContent(panel.webview, context.extensionUri);
 
-        // Fix with real path from config
-        const executablePath = "/opt/homebrew/bin/openscad"
-
-        const compiler = new openscad.Compiler({ engine: mode, nativePath: executablePath });
-
-        const compileAndPost = (text: string) => {
-            const emitter = compiler.compile(text);
-
-            emitter.on('stderr', console.log);
-            emitter.on('stdout', console.log);
-
-            once(emitter, 'done').then((data: Buffer[]) => {
-                const payload = data[0];
-                currentStlPayload = payload.toString();
-                panel.webview.postMessage({
-                    stlData: currentStlPayload
-                });
-            }).catch((error: Error) => {
-                console.log(error);
-            })
+        // Helper to get STL from manager and post to webview
+        const fetchAndPostSTL = async () => {
+            try {
+                await dataManager.triggerCompilation(uri);
+                const stlBuffer = dataManager.getSTL(uri);
+                if (stlBuffer) {
+                    currentStlPayload = stlBuffer.toString();
+                    panel.webview.postMessage({ stlData: currentStlPayload });
+                }
+            } catch (err) {
+                console.error('Error fetching STL from manager:', err);
+            }
         };
 
-        vscode.workspace.fs.readFile(uri).then(content => {
-            compileAndPost(new TextDecoder().decode(content));
+
+        // Initial load
+        fetchAndPostSTL();
+
+        // Listen for STL refresh events for this URI
+        const stlRefreshDisposable = onStlRefresh((changedUri) => {
+            if (changedUri.toString() === uri.toString() && panel.visible) {
+                fetchAndPostSTL();
+            }
         });
 
         const onDidChangeViewStateDisposable = panel.onDidChangeViewState(e => {
             const isPanelNowVisible = e.webviewPanel.visible;
-
-            // Only post the message if the panel just became visible
             if (isPanelNowVisible && !wasPanelVisible) {
                 if (currentStlPayload) {
                     panel.webview.postMessage({ stlData: currentStlPayload });
                 }
             }
-
-            // Update the visibility state for the next event
-            wasPanelVisible = isPanelNowVisible; 
+            wasPanelVisible = isPanelNowVisible;
         });
 
 
-        // ✨ Listen for file save events in the workspace
-        const onDidSaveDocumentDisposable = vscode.workspace.onDidSaveTextDocument(document => {
-            // Ensure the webview panel is still active and visible and it's the correct file
-            if (panel.visible && document.uri.toString() === uri.toString()) {
-                compileAndPost(document.getText());
-            }
-        });
-
-        // Clean up the event listener when the panel is closed
         panel.onDidDispose(() => {
-            onDidSaveDocumentDisposable.dispose();
             onDidChangeViewStateDisposable.dispose();
+            stlRefreshDisposable.dispose();
+            openPreviewUris.delete(uri.toString());
         }, null, context.subscriptions);
     }
 }

@@ -110,6 +110,16 @@
                 "command": "openscad.showOutput",
                 "title": "Show OpenSCAD output channel",
                 "category": "OpenSCAD"
+            },
+            {
+                "command": "openscad.showRenderLog",
+                "title": "OpenSCAD: Show Render Log",
+                "category": "OpenSCAD"
+            },
+            {
+                "command": "openscad.showErrorLog",
+                "title": "OpenSCAD: Show Error Log",
+                "category": "OpenSCAD"
             }
         ],
         "menus": {
