@@ -39,7 +39,7 @@ export class OpenScadDataManager {
 		data.stdout = '';
 		data.stderr = '';
 
-		const emitter = this.compiler.compile(scadCode, 'preview');
+		const emitter = this.compiler.compile(scadCode, 'fast');
 
 	    emitter.on('stdout', (chunk: string) => { data.stdout += chunk; });
 	    emitter.on('stderr', (chunk: string) => { data.stderr += chunk; });

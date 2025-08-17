@@ -120,6 +120,21 @@
                 "command": "openscad.showErrorLog",
                 "title": "OpenSCAD: Show Error Log",
                 "category": "OpenSCAD"
+            },
+            {
+                "command": "openscad.showDimensions",
+                "title": "OpenSCAD: Show Dimensions",
+                "category": "OpenSCAD"
+            },
+            {
+                "command": "openscad.showSceneGraph",
+                "title": "OpenSCAD: Show Scene Graph",
+                "category": "OpenSCAD"
+            },
+            {
+                "command": "openscad.showPreviewImage",
+                "title": "OpenSCAD: Show Preview Image",
+                "category": "OpenSCAD"
             }
         ],
         "menus": {

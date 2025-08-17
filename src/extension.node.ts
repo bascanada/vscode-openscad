@@ -67,6 +67,9 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('openscad.previewPanel', previewPanelCommand('native', context, openPreviewUris, dataManager, onStlRefresh)),
         vscode.commands.registerCommand('openscad.showErrorLog', vfsFilePreview('/error.log')),
         vscode.commands.registerCommand('openscad.showRenderLog', vfsFilePreview('/render.log')),
+        vscode.commands.registerCommand('openscad.showDimensions', vfsFilePreview('/dimensions.json')),
+        vscode.commands.registerCommand('openscad.showSceneGraph', vfsFilePreview('/scene-graph.csg')),
+        vscode.commands.registerCommand('openscad.showPreviewImage', vfsFilePreview('/preview.png')),
         vscode.commands.registerCommand(
             'openscad.exportByType',
             (mainUri, allUris) => previewManager.exportFile(mainUri, allUris)
