@@ -9,6 +9,9 @@
     "engines": {
         "vscode": "^1.75.0"
     },
+    "enabledApiProposals": [
+        "chatProvider"
+    ],
     "categories": [
         "Programming Languages",
         "Snippets"

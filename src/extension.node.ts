@@ -5,11 +5,13 @@
  *----------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 import { Cheatsheet } from 'src/cheatsheet/cheatsheet-panel';
 import { PreviewManager } from 'src/preview/preview-manager';
 import { LoggingService } from './logging-service';
 import { previewPanelCommand } from './preview/openscad-panel';
+import { registerChatContextProvider } from 'src/chat/chat-context-provider';
 
 import { OpenScadDataManager } from './vfs/data-manager';
 import { OpenScadVFSProvider } from './vfs/vfs-provider';
@@ -78,6 +80,9 @@ export function activate(context: vscode.ExtensionContext): void {
 
     /** New launch object */
     const previewManager = new PreviewManager(loggingService, context);
+
+    // Register chat context provider (separate module)
+    registerChatContextProvider(context, previewManager, loggingService);
 
     // Register commands
     const commands = [
