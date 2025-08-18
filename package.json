@@ -308,6 +308,11 @@
                     "default": true,
                     "description": "Show message when a preview is killed."
                 },
+                "openscad.debug.autoWriteOnSave": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "When enabled, write OpenSCAD debug files to the workspace '.openscad/debug' directory automatically on each save of a '.scad' file."
+                },
                 "openscad.logLevel": {
                     "type": "string",
                     "default": "INFO",

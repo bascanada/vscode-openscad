@@ -22,6 +22,9 @@ const extensionVersion = process.env.EXTENSION_VERSION || '0.0.0';
 
 /** Called when extension is activated */
 export function activate(context: vscode.ExtensionContext): void {
+    // Read initial config for debug auto-write
+    let autoWriteDebugOnSave = vscode.workspace.getConfiguration('openscad').get<boolean>('debug.autoWriteOnSave', true);
+
     // Event emitter to notify panels to refresh STL after compilation
     const stlRefreshEmitter = new vscode.EventEmitter<vscode.Uri>();
     const onStlRefresh = stlRefreshEmitter.event;
@@ -51,6 +54,19 @@ export function activate(context: vscode.ExtensionContext): void {
                 }, async () => {
                     await dataManager.triggerCompilation(document.uri);
                     stlRefreshEmitter.fire(document.uri);
+                });
+            }
+
+            // Optionally write debug files on each save if enabled
+            if (autoWriteDebugOnSave && debugManager) {
+                // Run in background notification
+                void vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: 'Writing OpenSCAD debug files...' }, async () => {
+                    try {
+                        await debugManager!.updateAllDebugFiles(document.uri);
+                    } catch (err: any) {
+                        // Don't block save; show an error notification
+                        vscode.window.showErrorMessage(`Failed to write OpenSCAD debug files: ${err?.message ?? String(err)}`);
+                    }
                 });
             }
         })
@@ -149,6 +165,8 @@ export function activate(context: vscode.ExtensionContext): void {
         previewManager.onDidChangeConfiguration(config); // Update launcher with new config
         loggingService.logDebug('Config change!');
         loggingService.setOutputLevel(config.get('logLevel') ?? 'NONE');
+        // Update debug auto-write flag
+        autoWriteDebugOnSave = config.get<boolean>('debug.autoWriteOnSave', false);
     }
 }
 
