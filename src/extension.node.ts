@@ -14,6 +14,8 @@ import { previewPanelCommand } from './preview/openscad-panel';
 import { OpenScadDataManager } from './vfs/data-manager';
 import { OpenScadVFSProvider } from './vfs/vfs-provider';
 import { vfsFilePreview } from './preview/vfs-file-preview';
+import { DebugFileManager } from './debug/debug-manager';
+import { debugCommands } from './debug/debug-commands';
 
 const extensionName = process.env.EXTENSION_NAME || 'antyos.openscad';
 const extensionVersion = process.env.EXTENSION_VERSION || '0.0.0';
@@ -31,6 +33,12 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.workspace.registerFileSystemProvider('openscad-debug', vfsProvider, { isCaseSensitive: true })
     );
+
+    // Debug manager (optional) - only when a workspace folder is open
+    let debugManager: DebugFileManager | undefined = undefined;
+    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+        debugManager = new DebugFileManager(vscode.workspace.workspaceFolders[0].uri);
+    }
 
     // --- Trigger Eager Compilation on Save ---
     context.subscriptions.push(
@@ -70,6 +78,8 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('openscad.showDimensions', vfsFilePreview('/dimensions.json')),
         vscode.commands.registerCommand('openscad.showSceneGraph', vfsFilePreview('/scene-graph.csg')),
         vscode.commands.registerCommand('openscad.showPreviewImage', vfsFilePreview('/preview.png')),
+        vscode.commands.registerCommand('openscad.showStl', vfsFilePreview('/model.stl')),
+        vscode.commands.registerCommand('openscad.writeDebugFiles', debugCommands(debugManager)),
         vscode.commands.registerCommand(
             'openscad.exportByType',
             (mainUri, allUris) => previewManager.exportFile(mainUri, allUris)

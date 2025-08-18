@@ -113,27 +113,37 @@
             },
             {
                 "command": "openscad.showRenderLog",
-                "title": "OpenSCAD: Show Render Log",
+                "title": "Show Render Log",
                 "category": "OpenSCAD"
             },
             {
                 "command": "openscad.showErrorLog",
-                "title": "OpenSCAD: Show Error Log",
+                "title": "Show Error Log",
                 "category": "OpenSCAD"
             },
             {
                 "command": "openscad.showDimensions",
-                "title": "OpenSCAD: Show Dimensions",
+                "title": "Show Dimensions",
                 "category": "OpenSCAD"
             },
             {
                 "command": "openscad.showSceneGraph",
-                "title": "OpenSCAD: Show Scene Graph",
+                "title": "Show Scene Graph",
                 "category": "OpenSCAD"
             },
             {
                 "command": "openscad.showPreviewImage",
-                "title": "OpenSCAD: Show Preview Image",
+                "title": "Show Preview Image",
+                "category": "OpenSCAD"
+            },
+            {
+                "command": "openscad.writeDebugFiles",
+                "title": "Write Debug Files",
+                "category": "OpenSCAD"
+            },
+            {
+                "command": "openscad.showStl",
+                "title": "Show STL file",
                 "category": "OpenSCAD"
             }
         ],
@@ -224,6 +234,10 @@
                 },
                 {
                     "command": "openscad.exportByConfig",
+                    "when": "editorLangId == scad || resourceLangId == scad"
+                },
+                {
+                    "command": "openscad.writeDebugFiles",
                     "when": "editorLangId == scad || resourceLangId == scad"
                 }
             ]
