@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@bascanada/cad-viewer':
-        specifier: 0.0.4
-        version: 0.0.4
+        specifier: 0.0.5
+        version: 0.0.5
       '@bascanada/openscad-compiler':
         specifier: 0.0.5
         version: 0.0.5
@@ -271,8 +271,8 @@ packages:
   '@bascanada/cad-viewer@0.0.1':
     resolution: {integrity: sha512-71yOhMaIj7TWnNViYdGE+c4JUYJfXZioCxaLoIk8gGpT8+KM4Sh3zfeccAO4wdOKnS3UMiaDuyQZQWG/z1xH3Q==}
 
-  '@bascanada/cad-viewer@0.0.4':
-    resolution: {integrity: sha512-pco8qKjRgXUBzDu6Ra2ndkNSv0eZ2cfJ4iZc9LoWmfEXa56w6tK+yXyxY4JjpZNL6DoptgziUbgVoVf34pzGPw==}
+  '@bascanada/cad-viewer@0.0.5':
+    resolution: {integrity: sha512-7VEh5GDTZIuFbkG4DNSEsaiXO32FkuAvNMiFsG833FNrHGBmErQjiDiGbYbgGDlgKJXfYssVF4QTgtO65LdozQ==}
 
   '@bascanada/openscad-compiler@0.0.5':
     resolution: {integrity: sha512-BZYWuovD3y5lDVVNMm71sVGsMBfG6gAR1Aw7JhwGUiujPW5CxCS3YMD/p/OSCoFvOXAOy6IxeapdSmghu3kvmg==}
@@ -3028,7 +3028,7 @@ snapshots:
     dependencies:
       three: 0.179.1
 
-  '@bascanada/cad-viewer@0.0.4':
+  '@bascanada/cad-viewer@0.0.5':
     dependencies:
       '@bascanada/cad-viewer': 0.0.1
       three: 0.179.1
